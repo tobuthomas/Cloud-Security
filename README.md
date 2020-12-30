@@ -255,7 +255,7 @@ _python3-pip: Package used to install Python software._
 
 The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
 
-![TODO: Update the path with the name of your screenshot of docker ps output](Images/docker_ps_output.png)
+![alt text](https://github.com/tobuthomas/Cloud-Security---ELK-Stack/blob/main/Diagrams/docker_ps_output.png "docker ps")
 
 ### Target Machines & Beats
 This ELK server is configured to monitor the following machines:
