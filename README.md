@@ -4,7 +4,7 @@ Setting up a cloud Monitoring system using elk stack server.
 
 The files in this repository were used to configure the network depicted below.
 
-(Cloud-Security---ELK-Stack/Diagrams/ELK_Network_Diagram.PNG)
+![alt text](https://github.com/tobuthomas/Cloud-Security---ELK-Stack/blob/main/Diagrams/ELK_Network_Diagram.PNG "ELK Network")
 
 These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the playbook file may be used to install only certain pieces of it, such as Filebeat.
 
