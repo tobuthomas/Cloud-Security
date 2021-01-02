@@ -230,15 +230,40 @@ Ansible was used to automate configuration of the ELK machine. No configuration 
 _Instead of manually keeping servers updated, making configurations, moving files, etc., we can use Ansible to automate this for groups of servers from one control machine. Ansible lets us quickly and easily deploy multitier apps. We list the tasks required to be done by writing a playbook, and Ansible will figure out how to get our systems to the state we want them to be in._  
 The playbook implements the following tasks:
 ```
-- _Install Packages: Installs the docker.io and python3-pip apt packages._
-_docker.io: The Docker engine, used for running containers._
-_python3-pip: Package used to install Python software._
+---
+- name: Configure Elk VM with Docker
+  hosts: elkservers
+  remote_user: elk
+  become: true
+  tasks:
+    # Use apt module
+    - name: Install docker.io
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+        name: docker.io
+        state: present
+    
+    # Use apt module
+    - name: Install python3-pip
+      apt:
+        force_apt_get: yes
+        name: python3-pip
+        state: present
+```
+- The header of the ansible playbook specifies the machine or group of machines as well as remote user.
+- Install Packages: Installs the docker.io and python3-pip apt packages.
+- docker.io: The Docker engine, used for running containers.
+- python3-pip: Package used to install Python software.
+
+```
  # Use pip module (It will default to pip3)
     - name: Install Docker module
       pip:
         name: docker
         state: present
 ```
+
 - _Install pip module: Installs docker pip package, which is required by Ansible, for controlling the state of Docker containers_ 
 - Other `tasks` that do the following:
 ``` 
@@ -247,7 +272,8 @@ _python3-pip: Package used to install Python software._
       command: sysctl -w vm.max_map_count=262144
 ```      
    
--Increase virtual memory: Set the `vm.max_map_count` to `262144`
+- Increase virtual memory: Set the `vm.max_map_count` to `262144`
+- This is a system requirement for the ELK container.
 - This configures the target VM (the machine being configured) to use more memory. The ELK container will not run without this setting.
 
 ``` 		
@@ -260,8 +286,9 @@ _python3-pip: Package used to install Python software._
         state: present
         reload: yes    
 ```             
-- You will want to use Ansible's `sysctl` module and configure it so that this setting is automatically run if your VM has been restarted.
+- The Ansible's `sysctl` module is used to configure the memory requirement such as this setting is automatically run if your VM has been restarted.
 - The most common reason that the `ELK` container does not run, is caused by this setting being incorrect.
+- To set this value permanently, update the vm.max_map_count setting in /etc/sysctl.conf.
 - [Ansible sysctl](https://docs.ansible.com/ansible/latest/modules/sysctl_module.html)
 
 ``` 
@@ -276,6 +303,10 @@ _python3-pip: Package used to install Python software._
 - 5601:5601
 - 9200:9200
 - 5044:5044
+- This command publishes the following ports, which are needed for proper operation of the ELK stack:
+- 5601 (Kibana web interface).
+- 9200 (Elasticsearch JSON interface).
+- 5044 (Logstash Beats interface, receives logs from Beats such as Filebeat
 
 ```
 # Use docker_container module
@@ -286,7 +317,7 @@ _python3-pip: Package used to install Python software._
         state: started
         restart_policy: always
 ```
-- restart_policy: always Starts the container
+- restart_policy: always Starts the container sebp/elk:761
 
 
 The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
