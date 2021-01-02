@@ -225,30 +225,64 @@ A summary of the access policies in place can be found in the table below.
 
 ### Elk Configuration
 
-Ansible was used to automate configuration of the ELK machine. No configuration was performed manually, which is advantageous because...
+Ansible was used to automate configuration of the ELK machine. No configuration was performed manually, which is advantageous because _Ansible allows us to automate the creation, configuration and management of machines._
 - What is the main advantage of automating configuration with Ansible?
-_Ansible allows us to automate the creation, configuration and management of machines. Instead of manually keeping servers updated, making configurations, moving files, etc., we can use Ansible to automate this for groups of servers from one control machine. Ansible lets us quickly and easily deploy multitier apps. We list the tasks required to be done by writing a playbook, and Ansible will figure out how to get our systems to the state we want them to be in._  
-The playbook implements the following tasks:
+_Instead of manually keeping servers updated, making configurations, moving files, etc., we can use Ansible to automate this for groups of servers from one control machine. Ansible lets us quickly and easily deploy multitier apps. We list the tasks required to be done by writing a playbook, and Ansible will figure out how to get our systems to the state we want them to be in._  
+**The playbook implements the following tasks:
+```
 - _Install Packages: Installs the docker.io and python3-pip apt packages._
 _docker.io: The Docker engine, used for running containers._
 _python3-pip: Package used to install Python software._
+ # Use pip module (It will default to pip3)
+    - name: Install Docker module
+      pip:
+        name: docker
+        state: present
+```
 - _Install pip module: Installs docker pip package, which is required by Ansible, for controlling the state of Docker containers_ 
 - Other `tasks` that do the following:
-
+``` 
+ # Use command module
+    - name: Increase virtual memory
+      command: sysctl -w vm.max_map_count=262144
+```      
+   
 	- - Increase virtual memory: Set the `vm.max_map_count` to `262144`
 
 		- This configures the target VM (the machine being configured) to use more memory. The ELK container will not run without this setting.
 
-		    - You will want to use Ansible's `sysctl` module and configure it so that this setting is automatically run if your VM has been restarted.
+		 # Use sysctl module
+``` 
+- name: Use more memory
+      sysctl:
+        name: vm.max_map_count
+        value: 262144
+        state: present
+        reload: yes    
+	```             - You will want to use Ansible's `sysctl` module and configure it so that this setting is automatically run if your VM has been restarted.
 			- The most common reason that the `ELK` container does not run, is caused by this setting being incorrect.
 			- [Ansible sysctl](https://docs.ansible.com/ansible/latest/modules/sysctl_module.html)
-
+``` 
+# Please list the ports that ELK runs on
+        published_ports:
+          -  5601:5601
+          -  9200:9200
+          -  5044:5044
+	  ```
 	- - published_ports:Configures the container to start with the following port mappings:
 			- `5601:5601`
 			- `9200:9200`
 			- `5044:5044`
 
-
+```
+# Use docker_container module
+    - name: download and launch a docker elk container
+      docker_container:
+        name: elk
+        image: sebp/elk:761
+        state: started
+        restart_policy: always
+```
 	- - state: started
         restart_policy: always Starts the container
 - ...
